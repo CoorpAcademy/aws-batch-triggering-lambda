@@ -5,12 +5,11 @@ exports.handler = (event, context, callback) => {
 
   const jobDefinition = event;
   batch.submitJob(jobDefinition, (err, res) => {
-    if(err){
-      console.error(err)
+    if (err) {
+      console.error(err);
       return callback(err);
     }
-    console.log(`Job ${res.jobName} launched with ${res.jobName}`);
+    console.log(`Job ${res.jobName} launched with id ${res.jobId}`);
     return callback();
-  })
-
+  });
 };

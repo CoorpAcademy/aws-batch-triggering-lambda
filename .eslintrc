@@ -18,6 +18,7 @@
     "@coorpacademy/coorpacademy"
   ],
   "rules": {
-    "strict": "off"
+    "strict": "off",
+    "no-console": "off"
   }
 }
