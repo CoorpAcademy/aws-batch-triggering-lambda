@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "ava": "^0.22.0",
+    "aws-sdk-mock": "^1.7.0",
     "codecov": "^2.3.0",
     "lambda-tester": "^3.1.0",
     "nyc": "^11.2.1"
