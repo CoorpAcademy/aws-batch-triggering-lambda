@@ -1,0 +1,12 @@
+{
+  "name": "aws-batch-triggering-lambda",
+  "version": "0.1.0",
+  "description": "AWS Batch Triggering Lambda",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["aws", "lambda"],
+  "author": "Adrien Becchis",
+  "license": "ISC"
+}
