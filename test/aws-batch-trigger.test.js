@@ -1,11 +1,15 @@
 const test = require('ava');
+const LambdaTester = require('lambda-tester');
 
 const {handler} = require('..');
 
-test.cb('Hello world, handler', t => {
-  handler({}, {}, (err, res) => {
-    t.falsy(err);
-    t.truthy(/hello/i.test(res));
-    t.end();
-  });
+test.beforeEach(t => {
+  t.context.lambda = LambdaTester(handler);
+})
+
+test('Hello world, handler', t => {
+  return t.context.lambda.event({})
+    .expectResult(res => {
+      t.truthy(/hello/i.test(res));
+    })
 });
