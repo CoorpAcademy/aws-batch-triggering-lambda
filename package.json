@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
+    "lint": "eslint index.js test",
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov"
   },
@@ -12,7 +13,9 @@
     "node": "6.10.2"
   },
   "dependencies": {
-    "aws-sdk": "^2.116.0"
+    "@coorpacademy/eslint-plugin-coorpacademy": "^6.0.1",
+    "aws-sdk": "^2.116.0",
+    "eslint": "^4.6.1"
   },
   "devDependencies": {
     "ava": "^0.22.0",
