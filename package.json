@@ -4,13 +4,16 @@
   "description": "AWS Batch Triggering Lambda",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "ava"
   },
   "engines": {
     "node": "6.10.2"
   },
   "dependencies": {
     "aws-sdk": "^2.116.0"
+  },
+  "devDependencies": {
+    "ava": "^0.22.0"
   },
   "keywords": [
     "aws",
