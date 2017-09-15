@@ -10,7 +10,7 @@ test.beforeEach(t => {
   t.context.lambda = LambdaTester(handler);
 });
 test.afterEach(t => {
-  AWS.restore('Batch');
+  AWS.restore('Batch', 'submitJob');
 });
 
 test('Broken AWS Batch', t => {
@@ -18,4 +18,11 @@ test('Broken AWS Batch', t => {
   return t.context.lambda
     .event({jobName: 'test', jobQueue: 'queue', jobDefinition: ' jobdef'})
     .expectError(err => t.deepEqual(err.message, 'BOOM'));
+});
+
+test('working AWS Batch', t => {
+  mockSubmitJob((param, cb) => cb(null, {jobName: 'test', jobId: 'id'}));
+  return t.context.lambda
+    .event({jobName: 'test', jobQueue: 'queue', jobDefinition: ' jobdef'})
+    .expectResult(res => t.deepEqual(res, {jobName: 'test', jobId: 'id'}));
 });

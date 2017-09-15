@@ -4,7 +4,7 @@
   "description": "AWS Batch Triggering Lambda",
   "main": "index.js",
   "scripts": {
-    "test": "ava",
+    "test": "ava --serial",
     "lint": "eslint index.js test",
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov"

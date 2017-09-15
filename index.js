@@ -10,6 +10,6 @@ exports.handler = (event, context, callback) => {
       return callback(err);
     }
     console.log(`Job ${res.jobName} launched with id ${res.jobId}`);
-    return callback();
+    return callback(null, res);
   });
 };
