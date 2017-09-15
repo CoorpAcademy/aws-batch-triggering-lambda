@@ -9,7 +9,13 @@
   "engines": {
     "node": "6.10.2"
   },
-  "keywords": ["aws", "lambda"],
+  "dependencies": {
+    "aws-sdk": "^2.116.0"
+  },
+  "keywords": [
+    "aws",
+    "lambda"
+  ],
   "author": "Adrien Becchis",
   "license": "ISC"
 }
