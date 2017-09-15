@@ -4,7 +4,8 @@
   "description": "AWS Batch Triggering Lambda",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "cover": "nyc npm run test"
   },
   "engines": {
     "node": "6.10.2"
@@ -13,7 +14,8 @@
     "aws-sdk": "^2.116.0"
   },
   "devDependencies": {
-    "ava": "^0.22.0"
+    "ava": "^0.22.0",
+    "nyc": "^11.2.1"
   },
   "keywords": [
     "aws",
