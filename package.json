@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "ava",
-    "cover": "nyc npm run test"
+    "cover": "nyc npm run test",
+    "publish-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov"
   },
   "engines": {
     "node": "6.10.2"
@@ -15,6 +16,7 @@
   },
   "devDependencies": {
     "ava": "^0.22.0",
+    "codecov": "^2.3.0",
     "nyc": "^11.2.1"
   },
   "keywords": [
