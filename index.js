@@ -41,13 +41,15 @@ const handleAwsTrigger = records => {
 
 const validateAndExtractRequest = request => {
   const req = {};
-  req.jobDefinition = validateString(request.jobDefinition);
-  req.jobQueue = validateString(request.jobQueue);
-  req.jobName = validateString(request.jobName);
+  for (const key of ['jobDefinition', 'jobQueue', 'jobName']) {
+    req[key] = validateString(key, request[key]);
+  }
   return req;
 };
 
-const validateString = str => {
+const validateString = (name, str) => {
+  if(str === undefined) throw new Error(`${name} key is not defined`);
+  if(typeof str !== 'string') throw new Error(`${name} key is not a string`);
   return str;
 };
 

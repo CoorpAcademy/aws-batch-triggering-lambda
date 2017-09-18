@@ -10,6 +10,45 @@ test('validateAndExtractRequest extract args', t => {
   };
   t.deepEqual(req, validateAndExtractRequest(req));
 });
-test.todo('validateAndExtractRequest detect missing args');
-test.todo('validateAndExtractRequest detect wrong type args');
-test.todo('validateAndExtractRequest leave out other args');
+
+test('validateAndExtractRequest detect missing args', t => {
+  const req = {
+    jobDefinition: 'jobDef'
+  };
+  t.throws(() => validateAndExtractRequest(req), 'jobQueue key is not defined');
+});
+
+test('validateAndExtractRequest detect wrong type args', t => {
+  const req = {
+    jobDefinition: 'jobDef',
+    jobQueue: 'job-queue',
+    jobName: 42
+  };
+  t.throws(() => validateAndExtractRequest(req), 'jobName key is not a string');
+});
+
+test('validateAndExtractRequest leave out other args', t => {
+  const req = {
+    jobDefinition: 'jobDef',
+    jobQueue: 'job-queue',
+    jobName: 'test-job',
+    extraArg: 'Et oué'
+  };
+  t.deepEqual(validateAndExtractRequest(req), {
+    jobDefinition: 'jobDef',
+    jobQueue: 'job-queue',
+    jobName: 'test-job'
+  });
+});
+
+test('validate string throw error if not a string', t => {
+  t.throws(() => validateString('key', 40.12), 'key key is not a string');
+});
+
+test('validate string throw error if undefined', t => {
+  t.throws(() => validateString('toto'), 'toto key is not defined');
+});
+
+test('validate string support empty string', t => {
+  t.deepEqual(validateString('toto', ''), '')
+});
