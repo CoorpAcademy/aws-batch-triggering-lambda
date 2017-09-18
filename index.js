@@ -48,8 +48,8 @@ const validateAndExtractRequest = request => {
 };
 
 const validateString = (name, str) => {
-  if(str === undefined) throw new Error(`${name} key is not defined`);
-  if(typeof str !== 'string') throw new Error(`${name} key is not a string`);
+  if (str === undefined) throw new Error(`${name} key is not defined`);
+  if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
   return str;
 };
 
@@ -71,16 +71,31 @@ const handleSnsRecord = record => {
   }
 };
 
+const getActivatedEventSources = (ses, env) => {
+  if (env.AWS_BATCH_TRIGGER_ENABLE !== undefined) {
+    const requestsEs = env.AWS_BATCH_TRIGGER_ENABLE.split(';');
+    return ses.filter(es => requestsEs.indexOf(es) !== -1);
+  }
+  if (env.AWS_BATCH_TRIGGER_DISABLE !== undefined) {
+    const exceptEs = env.AWS_BATCH_TRIGGER_DISABLE.split(';');
+    return ses.filter(es => exceptEs.indexOf(es) === -1);
+  }
+  return ses;
+};
+
 const eventSourceHandlers = {
   'aws:kinesis': handleKinesisRecord,
   'aws:sns': handleSnsRecord
 };
 const supportedEventSources = Object.keys(eventSourceHandlers);
+const activatedEventSources = getActivatedEventSources(supportedEventSources, process.env);
 
 // export for tests reasons
 module.exports = {
   eventSourceHandlers,
   supportedEventSources,
+  activatedEventSources,
+  getActivatedEventSources,
   handleSnsRecord,
   handleKinesisRecord,
   validateAndExtractRequest,

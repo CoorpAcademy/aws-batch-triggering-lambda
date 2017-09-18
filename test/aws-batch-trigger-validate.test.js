@@ -50,5 +50,5 @@ test('validate string throw error if undefined', t => {
 });
 
 test('validate string support empty string', t => {
-  t.deepEqual(validateString('toto', ''), '')
+  t.deepEqual(validateString('toto', ''), '');
 });
