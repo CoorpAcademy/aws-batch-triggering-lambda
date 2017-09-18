@@ -8,14 +8,15 @@ const parseEvent = event => {
       return new Error(`Invalid payload format. ${records.length} records. must contain single item.`)
     }
     const record = records[0];
-    if(record.eventSource !== 'aws:kinesis') {
+    if (record.eventSource === 'aws:kinesis') {
+      const payload = new Buffer(record.kinesis.data, 'base64').toString('utf-8')
+      try {
+        request = JSON.parse(payload);
+      } catch (err) {
+        return new Error('Kinesis Payload is not a json');
+      }
+    } else {
       return new Error(`Event source ${record.eventSource} not supported`);
-    }
-    const payload = new Buffer(record.kinesis.data, 'base64').toString('utf-8')
-    try {
-      request = JSON.parse(payload);
-    } catch(err) {
-      return new Error('Kinesis Payload is not a json');
     }
   } else {
     request = event;
