@@ -1,6 +1,5 @@
 const AWS = require('aws-sdk');
 
-const supportedEventSources = ['aws:sns', 'aws:kinesis'];
 
 exports.handler = (event, context, callback) => {
   const batch = new AWS.Batch({apiVersion: '2016-08-10'});
@@ -64,3 +63,4 @@ const eventSourceHandlers = {
   'aws:kinesis': handleKinesisRecord,
   'aws:sns': handleSnsRecord
 };
+const supportedEventSources = Object.keys(eventSourceHandlers);
