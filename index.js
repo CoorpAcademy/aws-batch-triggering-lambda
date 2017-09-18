@@ -1,5 +1,24 @@
 const AWS = require('aws-sdk');
 
+exports.handler = (event, context, callback) => {
+  const batch = new AWS.Batch({apiVersion: '2016-08-10'});
+
+  const jobRequest = parseEvent(event);
+  if (jobRequest instanceof Error) {
+    console.error(jobRequest);
+    return callback(jobRequest);
+  }
+
+  batch.submitJob(jobRequest, (err, res) => {
+    if (err) {
+      console.error(err);
+      return callback(err);
+    }
+    console.log(`Job ${res.jobName} launched with id ${res.jobId}`);
+    return callback(null, res);
+  });
+};
+
 const parseEvent = event => {
   let request;
   const records = event.Records;
@@ -32,22 +51,3 @@ const parseEvent = event => {
 
   return request;
 }
-
-exports.handler = (event, context, callback) => {
-  const batch = new AWS.Batch({apiVersion: '2016-08-10'});
-
-  const jobRequest = parseEvent(event);
-  if (jobRequest instanceof Error) {
-    console.error(jobRequest);
-    return callback(jobRequest);
-  }
-
-  batch.submitJob(jobRequest, (err, res) => {
-    if (err) {
-      console.error(err);
-      return callback(err);
-    }
-    console.log(`Job ${res.jobName} launched with id ${res.jobId}`);
-    return callback(null, res);
-  });
-};
