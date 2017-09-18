@@ -12,6 +12,29 @@ This Lambda is to trigger a job on *AWS batch* from a Lambda.
 This lambda can be triggered by a standard event (from a cloudwatch cron for instance, and a lambda call)
 , by a kinesis message or by a SNS message.
 
+## Usage
+
+The lambda expect the following payload:
+
+```json
+{
+  "jobDefinition": "the-job-definition",
+  "jobQueue": "the-job-queue",
+  "jobName": "the-job-name"
+}
+```
+
+This can be transmitted through the event, or an Kinesis/Sns event.
+
+The lambda will respond with either an error (and reason why) or
+a json with the following format:
+
+```json
+{
+  "jobName": "the-job-name",
+  "jobId": "b3e985b1-e02a-41c9-ac8f-4801e04c9a27-whatever"
+}
+```
 
 ## Configuration
 You can customize the lambda through environment variable to enable or not the
