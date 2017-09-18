@@ -9,4 +9,4 @@ AWS Batch Triggering Lambda
 This Lambda is to trigger a job on AWS batch from a Lambda.
 
 This lambda can be triggered by a standard event (from a cloudwatch cron for instance, and a lambda call)
-or by a kinesis message.
+, by a kinesis message or by a SNS message.
