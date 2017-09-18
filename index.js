@@ -35,15 +35,11 @@ const handleAwsTrigger = records => {
   const record = records[0];
   const eventSource = record.eventSource || record.EventSource;
 
-  if (! supportedEventSources.includes(eventSource)){
+  if (!supportedEventSources.includes(eventSource)) {
     throw new Error(`Event source ${eventSource} not supported`);
   }
 
-  if (eventSource === 'aws:kinesis') {
-    return handleKinesisRecord(record);
-  } else if (eventSource === 'aws:sns') {
-    return handleSnsRecord(record);
-  }
+  return eventSourceHandlers[eventSource](record);
 };
 
 const handleKinesisRecord = record => {
@@ -62,4 +58,9 @@ const handleSnsRecord = record => {
   } catch (err) {
     throw new Error('SNS Payload is not a json');
   }
+};
+
+const eventSourceHandlers = {
+  'aws:kinesis': handleKinesisRecord,
+  'aws:sns': handleSnsRecord
 };
