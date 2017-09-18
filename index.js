@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk');
 
-
-exports.handler = (event, context, callback) => {
+const handler = (event, context, callback) => {
   const batch = new AWS.Batch({apiVersion: '2016-08-10'});
   let jobRequest;
   try {
@@ -23,8 +22,7 @@ exports.handler = (event, context, callback) => {
 
 const parseEvent = event => {
   const request = event.Records ? handleAwsTrigger(event.Records) : event;
-  //
-  return request;
+  return validateAndExtractRequest(request);
 };
 
 const handleAwsTrigger = records => {
@@ -39,6 +37,18 @@ const handleAwsTrigger = records => {
   }
 
   return eventSourceHandlers[eventSource](record);
+};
+
+const validateAndExtractRequest = request => {
+  const req = {};
+  req.jobDefinition = validateString(request.jobDefinition);
+  req.jobQueue = validateString(request.jobQueue);
+  req.jobName = validateString(request.jobName);
+  return req;
+};
+
+const validateString = str => {
+  return str;
 };
 
 const handleKinesisRecord = record => {
@@ -64,3 +74,16 @@ const eventSourceHandlers = {
   'aws:sns': handleSnsRecord
 };
 const supportedEventSources = Object.keys(eventSourceHandlers);
+
+// export for tests reasons
+module.exports = {
+  eventSourceHandlers,
+  supportedEventSources,
+  handleSnsRecord,
+  handleKinesisRecord,
+  validateAndExtractRequest,
+  validateString,
+  handleAwsTrigger,
+  parseEvent,
+  handler
+};
