@@ -23,26 +23,23 @@ exports.handler = (event, context, callback) => {
 };
 
 const parseEvent = event => {
-  let request;
-  const records = event.Records;
-  if(records) {
-    if(records.length !== 1) {
-      throw new Error(`Invalid payload format. ${records.length} records. must contain single item.`)
-    }
-    const record = records[0];
-    if (record.eventSource === 'aws:kinesis') {
-      request = handleKinesisRecord(record);
-    } else if(record.EventSource === 'aws:sns') {
-      request = handleSnsRecord(record);
-    } else {
-      throw new Error(`Event source ${record.eventSource || record.EventSource} not supported`);
-    }
-  } else {
-    request = event;
-  }
+  const request = (event.Records) ? handleAwsTrigger(event.Records): event;
   //
-
   return request;
+}
+
+const handleAwsTrigger = (records) => {
+  if(records.length !== 1) {
+    throw new Error(`Invalid payload format. ${records.length} records. must contain single item.`)
+  }
+  const record = records[0];
+  if (record.eventSource === 'aws:kinesis') {
+    return handleKinesisRecord(record);
+  } else if(record.EventSource === 'aws:sns') {
+    return handleSnsRecord(record);
+  } else {
+    throw new Error(`Event source ${record.eventSource || record.EventSource} not supported`);
+  }
 }
 
 const handleKinesisRecord = record => {
