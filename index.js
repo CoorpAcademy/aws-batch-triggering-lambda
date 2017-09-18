@@ -15,8 +15,15 @@ const parseEvent = event => {
       } catch (err) {
         return new Error('Kinesis Payload is not a json');
       }
+    } else if(record.EventSource === 'aws:sns') {
+      const payload = record.Sns.Message;
+      try {
+        request = JSON.parse(payload);
+      } catch (err) {
+        return new Error('SNS Payload is not a json');
+      }
     } else {
-      return new Error(`Event source ${record.eventSource} not supported`);
+      return new Error(`Event source ${record.eventSource || record.EventSource} not supported`);
     }
   } else {
     request = event;
