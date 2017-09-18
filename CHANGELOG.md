@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 *Nothing So Far*
 
+## [0.5.0] - 2017-09-18
+### Added
+- More complete doc with a config&usage section
+- Whitelisting or blacklisting of the handled event source
+
 ## [0.4.0] - 2017-09-18
 ### Added
 - Validate request argument format
