@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
 
-const knowEventSources = ['aws:sns', 'aws:kinesis'];
+const supportedEventSources = ['aws:sns', 'aws:kinesis'];
 
 exports.handler = (event, context, callback) => {
   const batch = new AWS.Batch({apiVersion: '2016-08-10'});
@@ -33,12 +33,16 @@ const handleAwsTrigger = records => {
     throw new Error(`Invalid payload format. ${records.length} records. must contain single item.`);
   }
   const record = records[0];
-  if (record.eventSource === 'aws:kinesis') {
+  const eventSource = record.eventSource || record.EventSource;
+
+  if (! supportedEventSources.includes(eventSource)){
+    throw new Error(`Event source ${eventSource} not supported`);
+  }
+
+  if (eventSource === 'aws:kinesis') {
     return handleKinesisRecord(record);
-  } else if (record.EventSource === 'aws:sns') {
+  } else if (eventSource === 'aws:sns') {
     return handleSnsRecord(record);
-  } else {
-    throw new Error(`Event source ${record.eventSource || record.EventSource} not supported`);
   }
 };
 
