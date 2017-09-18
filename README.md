@@ -6,7 +6,19 @@ AWS Batch Triggering Lambda
 
 > Lambda to trigger AWS Batch Jobs
 
-This Lambda is to trigger a job on AWS batch from a Lambda.
+## About
+This Lambda is to trigger a job on *AWS batch* from a Lambda.
 
 This lambda can be triggered by a standard event (from a cloudwatch cron for instance, and a lambda call)
 , by a kinesis message or by a SNS message.
+
+
+## Configuration
+You can customize the lambda through environment variable to enable or not the
+differents event Sources supported:
+
+- `aws:sns`: SNS triggers
+- `aws:kinesis`: Kinesis triggers
+
+To do so, use either `AWS_BATCH_TRIGGER_ENABLE` and `AWS_BATCH_TRIGGER_DISABLE`
+that accept a `;` separated whitelist/blacklist
