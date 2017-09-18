@@ -34,6 +34,8 @@ const handleAwsTrigger = records => {
 
   if (!supportedEventSources.includes(eventSource)) {
     throw new Error(`Event source ${eventSource} not supported`);
+  } else if (!activatedEventSources.includes(eventSource)) {
+    throw new Error(`Event source ${eventSource} not activated`);
   }
 
   return eventSourceHandlers[eventSource](record);
