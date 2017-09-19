@@ -49,11 +49,13 @@ const validateAndExtractRequest = request => {
   return req;
 };
 
-const validateString = (name, str) => {
+const validateString = (name, str, pattern=/^[-_\.a-zA-Z]+$/) => {
   if (str === undefined) throw new Error(`${name} key is not defined`);
   if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
+  if (pattern && !pattern.test(str)) throw new Error(`${name} does not comply with pattern '${pattern}'`);
   return str;
 };
+validateString.NO_PATTERN = null;
 
 const handleKinesisRecord = record => {
   const payload = Buffer.from(record.kinesis.data, 'base64').toString('utf-8');
