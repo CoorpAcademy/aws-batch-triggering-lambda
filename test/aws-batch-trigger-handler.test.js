@@ -33,11 +33,11 @@ test('handleAwsTrigger KO deactivated Event Source', t => {
   const deactivatedEventSource = activatedEventSources.pop();
   t.throws(
     () => handleAwsTrigger([{eventSource: deactivatedEventSource}]),
-    `Event source ${deactivatedEventSource} not supported`
+    `Event source ${deactivatedEventSource} not activated`
   );
   t.throws(
     () => handleAwsTrigger([{EventSource: deactivatedEventSource}]),
-    `Event source ${deactivatedEventSource} not supported`
+    `Event source ${deactivatedEventSource} not activated`
   );
   activatedEventSources.push(deactivatedEventSource);
 });

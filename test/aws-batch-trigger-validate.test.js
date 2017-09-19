@@ -6,7 +6,10 @@ test('validateAndExtractRequest extract args', t => {
   const req = {
     jobDefinition: 'jobDef',
     jobQueue: 'job-queue',
-    jobName: 'test-job'
+    jobName: 'test-job',
+    parameters: {
+      param: 'setting'
+    }
   };
   t.deepEqual(req, validateAndExtractRequest(req));
 });
