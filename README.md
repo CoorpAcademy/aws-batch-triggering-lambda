@@ -7,10 +7,10 @@ AWS Batch Triggering Lambda
 > Lambda to trigger AWS Batch Jobs
 
 ## About
-This Lambda is to trigger a job on *AWS batch* from a Lambda.
+This Node Lambda is to trigger a job on *AWS batch* from a Lambda.
 
-This lambda can be triggered by a standard event (from a cloudwatch cron for instance, and a lambda call)
-, by a kinesis message or by a SNS message.
+This lambda can be triggered by a standard event (from a **CloudWatch** cron for instance, and a lambda call)
+, by a **kinesis** message or by a **SNS** message.
 
 ## Usage
 
@@ -20,11 +20,16 @@ The lambda expect the following payload:
 {
   "jobDefinition": "the-job-definition",
   "jobQueue": "the-job-queue",
-  "jobName": "the-job-name"
+  "jobName": "the-job-name",
+  "parameters": {
+     "some": "optional parameter"
+  }
 }
 ```
 
 This can be transmitted through the event, or an Kinesis/Sns event.
+
+`jobDefinition`, `jobQueue`, `jobName` parameters are mandatory. `parameters` object is optional.
 
 The lambda will respond with either an error (and reason why) or
 a json with the following format:
@@ -38,10 +43,10 @@ a json with the following format:
 
 ## Configuration
 You can customize the lambda through environment variable to enable or not the
-differents event Sources supported:
+supported *event Sources*:
 
 - `aws:sns`: SNS triggers
 - `aws:kinesis`: Kinesis triggers
 
 To do so, use either `AWS_BATCH_TRIGGER_ENABLE` and `AWS_BATCH_TRIGGER_DISABLE`
-that accept a `;` separated whitelist/blacklist
+that accept a `;` separated whitelist/blacklist.
