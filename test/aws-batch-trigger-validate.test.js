@@ -50,9 +50,12 @@ test('validate string throw error if undefined', t => {
 });
 
 test('validate string support empty string', t => {
-  t.deepEqual(validateString('toto', '', validateString.NO_PATTERN), '');
+  t.deepEqual(validateString('toto', ''), '');
 });
 
 test('validate string support check str pattern', t => {
-  t.throws(() => validateString('toto', ' space in it'), 'toto does not comply with pattern \'/^[-_\\.a-zA-Z]+$/\'',);
+  t.throws(() => validateString('toto', ' space in it', validateString.AWS_NAME),
+    `toto does not comply with pattern '${validateString.AWS_NAME}'`);
+  t.throws(() => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
+    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`);
 });

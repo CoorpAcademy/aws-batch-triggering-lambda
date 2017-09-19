@@ -44,18 +44,19 @@ const handleAwsTrigger = records => {
 const validateAndExtractRequest = request => {
   const req = {};
   for (const key of ['jobDefinition', 'jobQueue', 'jobName']) {
-    req[key] = validateString(key, request[key]);
+    req[key] = validateString(key, request[key], validateString.AWS_NAME);
   }
   return req;
 };
 
-const validateString = (name, str, pattern=/^[-_\.a-zA-Z]+$/) => {
+const validateString = (name, str, pattern = null) => {
   if (str === undefined) throw new Error(`${name} key is not defined`);
   if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
   if (pattern && !pattern.test(str)) throw new Error(`${name} does not comply with pattern '${pattern}'`);
   return str;
 };
-validateString.NO_PATTERN = null;
+validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
+validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const handleKinesisRecord = record => {
   const payload = Buffer.from(record.kinesis.data, 'base64').toString('utf-8');
