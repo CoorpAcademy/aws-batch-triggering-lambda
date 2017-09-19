@@ -92,7 +92,7 @@ const getActivatedEventSources = (ses, env) => {
     const exceptEs = env.AWS_BATCH_TRIGGER_DISABLE.split(';');
     return ses.filter(es => exceptEs.indexOf(es) === -1);
   }
-  return ses;
+  return [...ses];
 };
 
 const eventSourceHandlers = {
