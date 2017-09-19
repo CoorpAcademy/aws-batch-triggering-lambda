@@ -1,12 +1,31 @@
 const test = require('ava');
 
-const {handleKinesisRecord, handleSnsRecord, handleAwsTrigger} = require('..');
+const {handleKinesisRecord, handleSnsRecord, handleAwsTrigger, activatedEventSources} = require('..');
 
 const jobDef = {
   "jobDefinition": "bricklane-assign-cluster-staging-job",
   "jobQueue": "progression-job-staging-queue",
   "jobName": "test-from-lambda-via-sns"
 }
+
+test('handleAwsTrigger KO more than one record', t => {
+  t.throws(() => handleAwsTrigger([]), 'Invalid payload format. 0 records. must contain single item.');
+  t.throws(() => handleAwsTrigger([1, 2]), 'Invalid payload format. 2 records. must contain single item.');
+
+});
+
+test('handleAwsTrigger KO unsupported Event Source', t => {
+  t.throws(() => handleAwsTrigger([{eventSource: 'yolo'}]), 'Event source yolo not supported');
+  t.throws(() => handleAwsTrigger([{EventSource: 'yolo'}]), 'Event source yolo not supported');
+
+});
+
+test('handleAwsTrigger KO deactivated Event Source', t => {
+  const deactivatedEventSource = activatedEventSources.pop();
+  t.throws(() => handleAwsTrigger([{eventSource: deactivatedEventSource}]), `Event source ${deactivatedEventSource} not supported`);
+  t.throws(() => handleAwsTrigger([{EventSource: deactivatedEventSource}]), `Event source ${deactivatedEventSource} not supported`);
+  activatedEventSources.push(deactivatedEventSource)
+});
 
 test('handleKinesisRecord OK', t => {
   const kinesisRecord = {
@@ -28,7 +47,6 @@ test('handleKinesisRecord OK', t => {
   t.deepEqual(handleKinesisRecord(kinesisRecord), jobDef);
 
 });
-
 
 test('handleKinesisRecord KO', t => {
   const kinesisRecord = {
@@ -80,6 +98,7 @@ test('handleSnsRecord OK', t => {
   };
   t.deepEqual(handleSnsRecord(snsRecord), jobDef);
 });
+
 test('handleSnsRecord KO', t => {
   const snsRecord = {
     "EventVersion": "1.0",
