@@ -46,12 +46,12 @@ const validateAndExtractRequest = request => {
   for (const key of ['jobDefinition', 'jobQueue', 'jobName']) {
     req[key] = validateString(key, request[key], validateString.AWS_NAME);
   }
-  if ((!!request.settings) && (request.settings.constructor === Object)) {
-    const settings = {}
-    for (const key of Object.keys(request.settings)) {
-      settings[validateString(key, key, validateString.SHELL_VARIABLE)] = validateString(key, request.settings[key]);
+  if ((!!request.parameters) && (request.parameters.constructor === Object)) {
+    const parameters = {}
+    for (const key of Object.keys(request.parameters)) {
+      parameters[validateString(key, key, validateString.SHELL_VARIABLE)] = validateString(key, request.parameters[key]);
     }
-    req.settings = settings;
+    req.parameters = parameters;
   }
   return req;
 };
