@@ -27,6 +27,31 @@ test('validateAndExtractRequest detect wrong type args', t => {
   t.throws(() => validateAndExtractRequest(req), 'jobName key is not a string');
 });
 
+test('validateAndExtractRequest detect wrong seting key', t => {
+  const req = {
+    jobDefinition: 'jobDef',
+    jobQueue: 'job-queue',
+    jobName: '42',
+    settings: {
+      'WRONG KEY': '34'
+    }
+  };
+  t.throws(() => validateAndExtractRequest(req), 'WRONG KEY does not comply with pattern \'/^[_.a-zA-Z][_.a-zA-Z0-9]+$/\'');
+});
+
+test('validateAndExtractRequest detect wrong settings value', t => {
+  const req = {
+    jobDefinition: 'jobDef',
+    jobQueue: 'job-queue',
+    jobName: '42',
+    settings: {
+      'GOODKEY': '34',
+      'BADKEY': {a: 2}
+    }
+  };
+  t.throws(() => validateAndExtractRequest(req), 'BADKEY key is not a string');
+});
+
 test('validateAndExtractRequest leave out other args', t => {
   const req = {
     jobDefinition: 'jobDef',
