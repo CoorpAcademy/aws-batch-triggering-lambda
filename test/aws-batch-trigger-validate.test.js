@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const {validateAndExtractRequest, validateString} = require('..');
+const {validateAndExtractRequest, validateString, generateJobName} = require('..');
 
 test('validateAndExtractRequest extract args', t => {
   const req = {
@@ -86,4 +86,16 @@ test('validate string support check str pattern', t => {
     `toto does not comply with pattern '${validateString.AWS_NAME}'`);
   t.throws(() => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
     `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`);
+});
+
+test('generateJobName with jobName', t => {
+  t.deepEqual('JN', generateJobName({jobName: 'JN'}))
+});
+
+test('generateJobName with jobPrefix', t => {
+  t.truthy(/^JN--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobNamePrefix: 'JN', jobDefinition: 'JD'})));
+});
+
+test('generateJobName without jobPrefix', t => {
+  t.truthy(/^JD--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobDefinition: 'JD'})));
 });

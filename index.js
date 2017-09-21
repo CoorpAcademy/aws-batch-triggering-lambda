@@ -70,8 +70,8 @@ validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const generateJobName = opt => {
   if (opt.jobName) return validateString('jobName', opt.jobName, validateString.AWS_NAME);
-  const prefix = opt.jobNamePrefix ? validateString('jobName', opt.jobName, validateString.AWS_NAME)
-    : jobDefinition;
+  const prefix = opt.jobNamePrefix ? validateString('jobNamePrefix', opt.jobNamePrefix, validateString.AWS_NAME)
+    : opt.jobDefinition;
   return `${prefix}--${
     new Date().toISOString().slice(0,-5).replace(/:/g,'-')
   }--${crypto.randomBytes(16).toString('hex')}`;
@@ -119,6 +119,7 @@ module.exports = {
   eventSourceHandlers,
   supportedEventSources,
   activatedEventSources,
+  generateJobName,
   getActivatedEventSources,
   handleSnsRecord,
   handleKinesisRecord,
