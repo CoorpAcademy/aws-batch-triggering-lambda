@@ -1,4 +1,5 @@
 const AWS = require('aws-sdk');
+const crypto = require('crypto');
 
 const handler = (event, context, callback) => {
   const batch = new AWS.Batch({apiVersion: '2016-08-10'});
@@ -43,9 +44,11 @@ const handleAwsTrigger = records => {
 
 const validateAndExtractRequest = request => {
   const req = {};
-  for (const key of ['jobDefinition', 'jobQueue', 'jobName']) {
+  for (const key of ['jobDefinition', 'jobQueue']) {
     req[key] = validateString(key, request[key], validateString.AWS_NAME);
   }
+  req.jobName = generateJobName(request);
+
   if ((!!request.parameters) && (request.parameters.constructor === Object)) {
     const parameters = {}
     for (const key of Object.keys(request.parameters)) {
@@ -64,6 +67,15 @@ const validateString = (name, str, pattern = null) => {
 };
 validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
+
+const generateJobName = opt => {
+  if (opt.jobName) return validateString('jobName', opt.jobName, validateString.AWS_NAME);
+  const prefix = opt.jobNamePrefix ? validateString('jobName', opt.jobName, validateString.AWS_NAME)
+    : jobDefinition;
+  return `${prefix}--${
+    new Date().toISOString().slice(0,-5).replace(/:/g,'-')
+  }--${crypto.randomBytes(16).toString('hex')}`;
+};
 
 const handleKinesisRecord = record => {
   const payload = Buffer.from(record.kinesis.data, 'base64').toString('utf-8');
