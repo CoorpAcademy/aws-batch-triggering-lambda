@@ -29,7 +29,17 @@ The lambda expect the following payload:
 
 This can be transmitted through the event, or an Kinesis/Sns event.
 
-`jobDefinition`, `jobQueue`, `jobName` parameters are mandatory. `parameters` object is optional.
+`jobDefinition`, `jobQueue` parameters are mandatory.
+`parameters` object is optional.
+
+A `jobName` would be added based on the following logic :
+
+- `jobName` if such key exist
+- `jobNamePrefix` if defined followed by a date and a random string
+- `jobDefinition` otherwise followed by a date and a random string
+
+For the two last option name would look like this:
+`test-from-lambda-via-sns--2017-09-21T13-28-55--f6c83928fa175106ea35fd0ff31068e6`
 
 The lambda will respond with either an error (and reason why) or
 a json with the following format:
