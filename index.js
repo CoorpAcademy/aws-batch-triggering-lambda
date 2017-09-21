@@ -49,10 +49,13 @@ const validateAndExtractRequest = request => {
   }
   req.jobName = generateJobName(request);
 
-  if ((!!request.parameters) && (request.parameters.constructor === Object)) {
-    const parameters = {}
+  if (!!request.parameters && request.parameters.constructor === Object) {
+    const parameters = {};
     for (const key of Object.keys(request.parameters)) {
-      parameters[validateString(key, key, validateString.SHELL_VARIABLE)] = validateString(key, request.parameters[key]);
+      parameters[validateString(key, key, validateString.SHELL_VARIABLE)] = validateString(
+        key,
+        request.parameters[key]
+      );
     }
     req.parameters = parameters;
   }
@@ -62,7 +65,8 @@ const validateAndExtractRequest = request => {
 const validateString = (name, str, pattern = null) => {
   if (str === undefined) throw new Error(`${name} key is not defined`);
   if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
-  if (pattern && !pattern.test(str)) throw new Error(`${name} does not comply with pattern '${pattern}'`);
+  if (pattern && !pattern.test(str))
+    throw new Error(`${name} does not comply with pattern '${pattern}'`);
   return str;
 };
 validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
@@ -70,11 +74,13 @@ validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const generateJobName = opt => {
   if (opt.jobName) return validateString('jobName', opt.jobName, validateString.AWS_NAME);
-  const prefix = opt.jobNamePrefix ? validateString('jobNamePrefix', opt.jobNamePrefix, validateString.AWS_NAME)
+  const prefix = opt.jobNamePrefix
+    ? validateString('jobNamePrefix', opt.jobNamePrefix, validateString.AWS_NAME)
     : opt.jobDefinition;
-  return `${prefix}--${
-    new Date().toISOString().slice(0,-5).replace(/:/g,'-')
-  }--${crypto.randomBytes(16).toString('hex')}`;
+  return `${prefix}--${new Date()
+    .toISOString()
+    .slice(0, -5)
+    .replace(/:/g, '-')}--${crypto.randomBytes(16).toString('hex')}`;
 };
 
 const handleKinesisRecord = record => {

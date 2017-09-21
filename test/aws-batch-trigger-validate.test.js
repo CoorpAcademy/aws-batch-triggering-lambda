@@ -39,7 +39,10 @@ test('validateAndExtractRequest detect wrong parameters key', t => {
       'WRONG KEY': '34'
     }
   };
-  t.throws(() => validateAndExtractRequest(req), 'WRONG KEY does not comply with pattern \'/^[_.a-zA-Z][_.a-zA-Z0-9]+$/\'');
+  t.throws(
+    () => validateAndExtractRequest(req),
+    "WRONG KEY does not comply with pattern '/^[_.a-zA-Z][_.a-zA-Z0-9]+$/'"
+  );
 });
 
 test('validateAndExtractRequest detect wrong parameters value', t => {
@@ -48,8 +51,8 @@ test('validateAndExtractRequest detect wrong parameters value', t => {
     jobQueue: 'job-queue',
     jobName: '42',
     parameters: {
-      'GOODKEY': '34',
-      'BADKEY': {a: 2}
+      GOODKEY: '34',
+      BADKEY: {a: 2}
     }
   };
   t.throws(() => validateAndExtractRequest(req), 'BADKEY key is not a string');
@@ -82,18 +85,24 @@ test('validate string support empty string', t => {
 });
 
 test('validate string support check str pattern', t => {
-  t.throws(() => validateString('toto', ' space in it', validateString.AWS_NAME),
-    `toto does not comply with pattern '${validateString.AWS_NAME}'`);
-  t.throws(() => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
-    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`);
+  t.throws(
+    () => validateString('toto', ' space in it', validateString.AWS_NAME),
+    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+  );
+  t.throws(
+    () => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
+    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`
+  );
 });
 
 test('generateJobName with jobName', t => {
-  t.deepEqual('JN', generateJobName({jobName: 'JN'}))
+  t.deepEqual('JN', generateJobName({jobName: 'JN'}));
 });
 
 test('generateJobName with jobPrefix', t => {
-  t.truthy(/^JN--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobNamePrefix: 'JN', jobDefinition: 'JD'})));
+  t.truthy(
+    /^JN--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobNamePrefix: 'JN', jobDefinition: 'JD'}))
+  );
 });
 
 test('generateJobName without jobPrefix', t => {
