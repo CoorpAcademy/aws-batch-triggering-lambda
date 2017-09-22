@@ -60,3 +60,8 @@ supported *event Sources*:
 
 To do so, use either `AWS_BATCH_TRIGGER_ENABLE` and `AWS_BATCH_TRIGGER_DISABLE`
 that accept a `;` separated whitelist/blacklist.
+
+It's also possible to restrict the jobs and/or the queue on which the job can be invocated.
+To do so, use the `AWS_BATCH_JOB_WHITELIST` and `AWS_BATCH_QUEUE_WHITELIST` which accept
+a `;` separated list of pattern (without the `^` and `$` at the extremities).
+(for instance `job-queue;staging-.*queue`)
