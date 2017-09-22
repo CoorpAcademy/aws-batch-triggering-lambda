@@ -73,7 +73,11 @@ validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const validatePattern = (pattern, str) => {
-   return new RegExp(`^${pattern}$`).test(str);
+  const patterns = pattern.split(';')
+  for (let pattern of patterns) {
+    if(new RegExp(`^${pattern}$`).test(str)) return true;
+  }
+  return false;
 };
 
 const generateJobName = opt => {

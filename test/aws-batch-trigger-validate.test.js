@@ -129,3 +129,14 @@ test('validate simple unique pattern', t => {
   t.falsy(validatePattern(pattern, 'atoto'));
   t.falsy(validatePattern(pattern, 'oto'));
 });
+
+test('validate multipattern', t => {
+  const multipattern = '(t[io])+;aws-.*';
+
+  t.truthy(validatePattern(multipattern, 'toti'));
+  t.truthy(validatePattern(multipattern, 'aws-lambda'));
+  t.truthy(validatePattern(multipattern, 'titi'));
+  t.falsy(validatePattern(multipattern, 'nimp'));
+  t.falsy(validatePattern(multipattern, 'naws-nlambda'));
+  t.falsy(validatePattern(multipattern, 'oto'));
+});
