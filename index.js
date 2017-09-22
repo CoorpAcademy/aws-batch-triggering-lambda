@@ -23,7 +23,18 @@ const handler = (event, context, callback) => {
 
 const parseEvent = event => {
   const request = event.Records ? handleAwsTrigger(event.Records) : event;
-  return validateAndExtractRequest(request);
+  const validRequest = validateAndExtractRequest(request);
+
+  if (process.env.AWS_BATCH_JOB_WHITELIST
+    && !validatePattern(process.env.AWS_BATCH_JOB_WHITELIST, validRequest)) {
+    throw new Error(`JobDefinition ${validRequest.jobDefinition} is not allowed`);
+  }
+  if (process.env.AWS_BATCH_QUEUE_WHITELIST
+    && !validatePattern(process.env.AWS_BATCH_QUEUE_WHITELIST, validRequest)) {
+    throw new Error(`JobQueue ${validRequest.jobQueue} is not allowed`);
+  }
+
+    return validRequest;
 };
 
 const handleAwsTrigger = records => {
@@ -38,7 +49,6 @@ const handleAwsTrigger = records => {
   } else if (!activatedEventSources.includes(eventSource)) {
     throw new Error(`Event source ${eventSource} not activated`);
   }
-
   return eventSourceHandlers[eventSource](record);
 };
 
@@ -75,7 +85,7 @@ validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 const validatePattern = (pattern, str) => {
   const patterns = pattern.split(';')
   for (let pattern of patterns) {
-    if(new RegExp(`^${pattern}$`).test(str)) return true;
+    if (new RegExp(`^${pattern}$`).test(str)) return true;
   }
   return false;
 };
