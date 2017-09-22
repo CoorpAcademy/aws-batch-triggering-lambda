@@ -1,6 +1,6 @@
 const test = require('ava');
 
-const {validateAndExtractRequest, validateString, generateJobName} = require('..');
+const {validateAndExtractRequest, validateString, validatePattern, generateJobName} = require('..');
 
 test('validateAndExtractRequest extract args', t => {
   const req = {
@@ -107,4 +107,25 @@ test('generateJobName with jobPrefix', t => {
 
 test('generateJobName without jobPrefix', t => {
   t.truthy(/^JD--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobDefinition: 'JD'})));
+});
+
+
+test('validate simple unique pattern', t => {
+  const pattern = 'myprefix-.*';
+  t.truthy(validatePattern(pattern, 'myprefix-isgood'));
+  t.truthy(validatePattern(pattern, 'myprefix-isOK'));
+  t.truthy(validatePattern(pattern, 'myprefix-is-super-green'));
+  t.falsy(validatePattern(pattern, 'myprefixalone'));
+  t.falsy(validatePattern(pattern, 'not-myprefix-followed'));
+  t.falsy(validatePattern(pattern, 'this-is-super-red'));
+});
+
+test('validate simple unique pattern', t => {
+  const pattern = '(t[io])+';
+  t.truthy(validatePattern(pattern, 'to'));
+  t.truthy(validatePattern(pattern, 'toto'));
+  t.truthy(validatePattern(pattern, 'titi'));
+  t.falsy(validatePattern(pattern, 'tata'));
+  t.falsy(validatePattern(pattern, 'atoto'));
+  t.falsy(validatePattern(pattern, 'oto'));
 });

@@ -72,6 +72,10 @@ const validateString = (name, str, pattern = null) => {
 validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
+const validatePattern = (pattern, str) => {
+   return new RegExp(`^${pattern}$`).test(str);
+};
+
 const generateJobName = opt => {
   if (opt.jobName) return validateString('jobName', opt.jobName, validateString.AWS_NAME);
   const prefix = opt.jobNamePrefix
@@ -131,6 +135,7 @@ module.exports = {
   handleKinesisRecord,
   validateAndExtractRequest,
   validateString,
+  validatePattern,
   handleAwsTrigger,
   parseEvent,
   handler
