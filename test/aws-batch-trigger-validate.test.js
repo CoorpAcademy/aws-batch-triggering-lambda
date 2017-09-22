@@ -1,6 +1,12 @@
 const test = require('ava');
 
-const {validateAndExtractRequest, validateString, validatePattern, generateJobName} = require('..');
+const {
+  validateAndExtractRequest,
+  validateString,
+  validatePattern,
+  generateJobName,
+  checkAuthorization
+} = require('..');
 
 test('validateAndExtractRequest extract args', t => {
   const req = {
@@ -109,7 +115,6 @@ test('generateJobName without jobPrefix', t => {
   t.truthy(/^JD--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobDefinition: 'JD'})));
 });
 
-
 test('validate simple unique pattern', t => {
   const pattern = 'myprefix-.*';
   t.truthy(validatePattern(pattern, 'myprefix-isgood'));
@@ -139,4 +144,27 @@ test('validate multipattern', t => {
   t.falsy(validatePattern(multipattern, 'nimp'));
   t.falsy(validatePattern(multipattern, 'naws-nlambda'));
   t.falsy(validatePattern(multipattern, 'oto'));
+});
+
+test('checkAuthorization no restriction', t => {
+  t.notThrows(() => checkAuthorization({
+    jobDefinition: 'job', jobQueue: 'queue'
+  }, {}));
+});
+
+test('checkAuthorization respected restriction', t => {
+  t.notThrows(() => checkAuthorization({
+    jobDefinition: 'job', jobQueue: 'queue'
+  }, {AWS_BATCH_JOB_WHITELIST: 'j.b'}));
+  t.notThrows(() => checkAuthorization({
+    jobDefinition: 'job', jobQueue: 'queue'
+  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.*e'}));
+});
+test('checkAuthorization non respected restriction', t => {
+  t.throws(() => checkAuthorization({
+    jobDefinition: 'job', jobQueue: 'queue'
+  }, {AWS_BATCH_JOB_WHITELIST: 'j[aeiu]b'}), 'JobDefinition job is not allowed');
+  t.throws(() => checkAuthorization({
+    jobDefinition: 'job', jobQueue: 'queue'
+  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}), 'JobQueue queue is not allowed');
 });

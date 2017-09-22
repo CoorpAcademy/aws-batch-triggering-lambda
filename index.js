@@ -24,17 +24,8 @@ const handler = (event, context, callback) => {
 const parseEvent = event => {
   const request = event.Records ? handleAwsTrigger(event.Records) : event;
   const validRequest = validateAndExtractRequest(request);
-
-  if (process.env.AWS_BATCH_JOB_WHITELIST
-    && !validatePattern(process.env.AWS_BATCH_JOB_WHITELIST, validRequest)) {
-    throw new Error(`JobDefinition ${validRequest.jobDefinition} is not allowed`);
-  }
-  if (process.env.AWS_BATCH_QUEUE_WHITELIST
-    && !validatePattern(process.env.AWS_BATCH_QUEUE_WHITELIST, validRequest)) {
-    throw new Error(`JobQueue ${validRequest.jobQueue} is not allowed`);
-  }
-
-    return validRequest;
+  checkAuthorization(validRequest, process.env);
+  return validRequest;
 };
 
 const handleAwsTrigger = records => {
@@ -72,6 +63,15 @@ const validateAndExtractRequest = request => {
   return req;
 };
 
+const checkAuthorization = (request, opt) => {
+  if (opt.AWS_BATCH_JOB_WHITELIST && !validatePattern(opt.AWS_BATCH_JOB_WHITELIST, request.jobDefinition)) {
+    throw new Error(`JobDefinition ${request.jobDefinition} is not allowed`);
+  }
+  if (opt.AWS_BATCH_QUEUE_WHITELIST && !validatePattern(opt.AWS_BATCH_QUEUE_WHITELIST, request.jobQueue)) {
+    throw new Error(`JobQueue ${request.jobQueue} is not allowed`);
+  }
+};
+
 const validateString = (name, str, pattern = null) => {
   if (str === undefined) throw new Error(`${name} key is not defined`);
   if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
@@ -83,8 +83,8 @@ validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const validatePattern = (pattern, str) => {
-  const patterns = pattern.split(';')
-  for (let pattern of patterns) {
+  const patterns = pattern.split(';');
+  for (const pattern of patterns) {
     if (new RegExp(`^${pattern}$`).test(str)) return true;
   }
   return false;
@@ -148,6 +148,7 @@ module.exports = {
   handleSnsRecord,
   handleKinesisRecord,
   validateAndExtractRequest,
+  checkAuthorization,
   validateString,
   validatePattern,
   handleAwsTrigger,
