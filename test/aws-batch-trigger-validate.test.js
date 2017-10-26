@@ -4,6 +4,7 @@ const {
   validateAndExtractRequest,
   validateString,
   validatePattern,
+  validateDependsOn,
   generateJobName,
   checkAuthorization
 } = require('..');
@@ -167,4 +168,20 @@ test('checkAuthorization non respected restriction', t => {
   t.throws(() => checkAuthorization({
     jobDefinition: 'job', jobQueue: 'queue'
   }, {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}), 'JobQueue queue is not allowed');
+});
+
+test('validateDependsOn with normal dependsOn', t => {
+  const don = [{jobId: '12'}, {jobId: '24'}];
+  t.deepEqual(validateDependsOn(don), don)
+});
+
+test('validateDependsOn with extra info in dependsOn', t => {
+  const don = [{jobId: '12', extra: 'information'}, {jobId: '24'}];
+  t.deepEqual(validateDependsOn(don), [{jobId: '12'}, {jobId: '24'}])
+});
+
+test('validateDependsOn with missing jobId in dependsOn', t => {
+  const don = [{extra: 'information'}, {jobId: '24'}];
+  t.throws(() => validateDependsOn(don),
+    'dependsOn job does not have jobId {"extra":"information"}')
 });

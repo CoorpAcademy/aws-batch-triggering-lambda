@@ -60,6 +60,9 @@ const validateAndExtractRequest = request => {
     }
     req.parameters = parameters;
   }
+  if (!!request.dependsOn && request.dependsOn.length > 0) {
+    req.dependsOn = validateDependsOn(request.dependsOn)
+  }
   return req;
 };
 
@@ -88,6 +91,13 @@ const validatePattern = (pattern, str) => {
     if (new RegExp(`^${pattern}$`).test(str)) return true;
   }
   return false;
+};
+
+const validateDependsOn = dependsOn => {
+  return dependsOn.map(job => {
+    if(!job.jobId) throw new Error(`dependsOn job does not have jobId ${JSON.stringify(job)}`);
+    return ({jobId: job.jobId});
+  });
 };
 
 const generateJobName = opt => {
@@ -151,6 +161,7 @@ module.exports = {
   checkAuthorization,
   validateString,
   validatePattern,
+  validateDependsOn,
   handleAwsTrigger,
   parseEvent,
   handler
