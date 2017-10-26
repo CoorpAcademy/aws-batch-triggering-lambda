@@ -23,14 +23,15 @@ The lambda expect the following payload:
   "jobName": "the-job-name",
   "parameters": {
      "some": "optional parameter"
-  }
+  },
+  "dependsOn": [{"jobId": "other-job-name"}]
 }
 ```
 
 This can be transmitted through the event, or an Kinesis/Sns event.
 
 `jobDefinition`, `jobQueue` parameters are mandatory.
-`parameters` object is optional.
+`parameters` object is optional. `dependsOn` array is optional too
 
 A `jobName` would be added based on the following logic :
 

@@ -7,6 +7,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 *Nothing So Far*
 
+## [0.9.0] - 2017-10-26
+- Add handling for `dependsOn` job list
+
+<!-- TODO CHANGELOG SECTION -->
+
 ## [0.5.0] - 2017-09-18
 ### Added
 - More complete doc with a config&usage section
@@ -29,7 +34,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - First basic working Lambda
 - Tests
 
-[unreleased]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.4.0...master
+[unreleased]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.9.0...master
+[0.9.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.8.0...v0.9.0
+
 [0.4.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.1.0...v0.2.0
