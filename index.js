@@ -46,7 +46,7 @@ const handleAwsTrigger = records => {
 const validateAndExtractRequest = request => {
   const req = {};
   for (const key of ['jobDefinition', 'jobQueue']) {
-    req[key] = validateString(key, request[key], validateString.AWS_NAME);
+    req[key] = validateString(key, request[key], validateString.AWS_NAME_ARN);
   }
   req.jobName = generateJobName(request);
 
@@ -83,6 +83,7 @@ const validateString = (name, str, pattern = null) => {
   return str;
 };
 validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
+validateString.AWS_NAME_ARN = /(^arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)$)|(^[-_a-zA-Z0-9]+$)/
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const validatePattern = (pattern, str) => {

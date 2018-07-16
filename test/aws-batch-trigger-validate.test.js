@@ -91,6 +91,20 @@ test('validate string support empty string', t => {
   t.deepEqual(validateString('toto', ''), '');
 });
 
+test('validate string', t => {
+  t.deepEqual(validateString('toto', 'tata', validateString.AWS_NAME_ARN), 'tata');
+});
+
+test('validate ARN string with version and /', t => {
+  const arn = 'arn:aws:batch:eu-west-1:005166266199:toto/toto:1';
+  t.deepEqual(validateString('toto', arn, validateString.AWS_NAME_ARN), arn);
+});
+
+test('validate ARN string', t => {
+  const arn = 'arn:aws:batch:eu-west-1:005166266199:toto';
+  t.deepEqual(validateString('toto', arn, validateString.AWS_NAME_ARN), arn);
+});
+
 test('validate string support check str pattern', t => {
   t.throws(
     () => validateString('toto', ' space in it', validateString.AWS_NAME),
@@ -99,6 +113,18 @@ test('validate string support check str pattern', t => {
   t.throws(
     () => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
     `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`
+  );
+  t.throws(
+    () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME),
+    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+  );
+  t.throws(
+    () => validateString('toto', ' space in it', validateString.AWS_NAME_ARN),
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
+  );
+  t.throws(
+    () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME_ARN),
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
   );
 });
 
