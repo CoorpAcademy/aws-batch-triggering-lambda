@@ -3,6 +3,7 @@ const test = require('ava');
 const {
   handleKinesisRecord,
   handleSnsRecord,
+  handleSqsRecord,
   handleAwsTrigger,
   activatedEventSources
 } = require('..');
@@ -142,4 +143,44 @@ test('handleSnsRecord KO', t => {
     }
   };
   t.throws(() => handleSnsRecord(snsRecord), 'SNS Payload is not a json');
+});
+
+test('handleSqsRecord OK', t => {
+  const sqsRecord = {
+    body: JSON.stringify(jobDef),
+    receiptHandle: 'MessageReceiptHandle',
+    md5OfBody: '7b270e59b47ff90a553787216d55d91d',
+    eventSourceARN: 'arn:aws:sqs:eu-west-1:123456789012:MyQueue',
+    eventSource: 'aws:sqs',
+    awsRegion: 'eu-west-1',
+    messageId: '19dd0b57-b21e-4ac1-bd88-01bbb068cb78',
+    attributes: {
+      ApproximateFirstReceiveTimestamp: '1523232000001',
+      SenderId: '123456789012',
+      ApproximateReceiveCount: '1',
+      SentTimestamp: '1523232000000'
+    },
+    messageAttributes: {}
+  };
+  t.deepEqual(handleSqsRecord(sqsRecord), jobDef);
+});
+
+test('handleSqsRecord KO', t => {
+  const sqsRecord = {
+    body: 'NOT A JSON!',
+    receiptHandle: 'MessageReceiptHandle',
+    md5OfBody: '7b270e59b47ff90a553787216d55d91d',
+    eventSourceARN: 'arn:aws:sqs:eu-west-1:123456789012:MyQueue',
+    eventSource: 'aws:sqs',
+    awsRegion: 'eu-west-1',
+    messageId: '19dd0b57-b21e-4ac1-bd88-01bbb068cb78',
+    attributes: {
+      ApproximateFirstReceiveTimestamp: '1523232000001',
+      SenderId: '123456789012',
+      ApproximateReceiveCount: '1',
+      SentTimestamp: '1523232000000'
+    },
+    messageAttributes: {}
+  };
+  t.throws(() => handleSqsRecord(sqsRecord), 'SQS Payload is not a json');
 });

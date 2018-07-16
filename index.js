@@ -129,6 +129,15 @@ const handleSnsRecord = record => {
   }
 };
 
+const handleSqsRecord = record => {
+  const payload = record.body;
+  try {
+    return JSON.parse(payload);
+  } catch (err) {
+    throw new Error('SQS Payload is not a json');
+  }
+};
+
 const getActivatedEventSources = (ses, env) => {
   if (env.AWS_BATCH_TRIGGER_ENABLE !== undefined) {
     const requestsEs = env.AWS_BATCH_TRIGGER_ENABLE.split(';');
@@ -143,7 +152,8 @@ const getActivatedEventSources = (ses, env) => {
 
 const eventSourceHandlers = {
   'aws:kinesis': handleKinesisRecord,
-  'aws:sns': handleSnsRecord
+  'aws:sns': handleSnsRecord,
+  'aws:sqs': handleSqsRecord
 };
 const supportedEventSources = Object.keys(eventSourceHandlers);
 const activatedEventSources = getActivatedEventSources(supportedEventSources, process.env);
@@ -157,6 +167,7 @@ module.exports = {
   getActivatedEventSources,
   handleSnsRecord,
   handleKinesisRecord,
+  handleSqsRecord,
   validateAndExtractRequest,
   checkAuthorization,
   validateString,
