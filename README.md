@@ -9,8 +9,8 @@ AWS Batch Triggering Lambda
 ## About
 This Node Lambda is to trigger a job on *AWS batch* from a Lambda.
 
-This lambda can be triggered by a standard event (from a **CloudWatch** cron for instance, and a lambda call)
-, by a **kinesis** message or by a **SNS** message.
+This lambda can be triggered by a standard event (from a **CloudWatch** cron for instance, and a lambda call),
+by a **kinesis**, a **SNS** or **SQS** message.
 
 ## Usage
 
@@ -28,7 +28,7 @@ The lambda expect the following payload:
 }
 ```
 
-This can be transmitted through the event, or an Kinesis/Sns event.
+This can be transmitted through the event, or an *Kinesis*/*Sns*/*SQS* event.
 
 `jobDefinition`, `jobQueue` parameters are mandatory.
 `parameters` object is optional. `dependsOn` array is optional too
@@ -58,6 +58,7 @@ supported *event Sources*:
 
 - `aws:sns`: SNS triggers
 - `aws:kinesis`: Kinesis triggers
+- `aws:sqs`: SQS triggers
 
 To do so, use either `AWS_BATCH_TRIGGER_ENABLE` and `AWS_BATCH_TRIGGER_DISABLE`
 that accept a `;` separated whitelist/blacklist.

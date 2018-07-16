@@ -7,6 +7,9 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased][unreleased]
 *Nothing So Far*
 
+## [0.10.0] - 2018-07-16
+- Add support for SQS trigger
+
 ## [0.9.0] - 2017-10-26
 - Add handling for `dependsOn` job list
 
@@ -34,7 +37,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 - First basic working Lambda
 - Tests
 
-[unreleased]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.9.0...master
+[unreleased]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.10.0...master
+[0.10.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.8.0...v0.9.0
 
 [0.4.0]: https://github.com/CoorpAcademy/aws-batch-triggering-lambda/compare/v0.3.0...v0.4.0
