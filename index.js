@@ -45,9 +45,9 @@ const handleAwsTrigger = records => {
 
 const validateAndExtractRequest = request => {
   const req = {};
-  for (const key of ['jobDefinition', 'jobQueue']) {
-    req[key] = validateString(key, request[key], validateString.AWS_NAME_ARN);
-  }
+  req.jobQueue = validateString('jobQueue', request.jobQueue, validateString.AWS_NAME_ARN);
+  req.jobDefinition = validateString('jobDefinition', request.jobDefinition, validateString.AWS_NAME_ARN_WITH_REVISION);
+
   req.jobName = generateJobName(request);
 
   if (!!request.parameters && request.parameters.constructor === Object) {
@@ -82,8 +82,12 @@ const validateString = (name, str, pattern = null) => {
     throw new Error(`${name} does not comply with pattern '${pattern}' (${str})`);
   return str;
 };
-validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
-validateString.AWS_NAME_ARN = /(^arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)$)|(^[-_a-zA-Z0-9]+$)/
+const nameBaseRegex = /[-_a-zA-Z0-9]+/;
+const arnBaseRegex = /arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)/;
+validateString.AWS_NAME = new RegExp(`^${nameBaseRegex.source}$`);
+validateString.AWS_ARN = new RegExp(`^${arnBaseRegex.source}$`);
+validateString.AWS_NAME_ARN = new RegExp(`(${validateString.AWS_NAME.source})|(${validateString.AWS_ARN.source})`);
+validateString.AWS_NAME_ARN_WITH_REVISION = new RegExp(`(^${nameBaseRegex.source}(:\\d+)?$)|(^${arnBaseRegex.source}(:\\d+)?$)`);
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const validatePattern = (pattern, str) => {

@@ -79,6 +79,19 @@ test('validateAndExtractRequest leave out other args', t => {
   });
 });
 
+test('validateAndExtractRequest support version in jobDefinition', t => {
+  const req = {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job'
+  };
+  t.deepEqual(validateAndExtractRequest(req), {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job'
+  });
+});
+
 test('validate string throw error if not a string', t => {
   t.throws(() => validateString('key', 40.12), 'key key is not a string');
 });
