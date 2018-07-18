@@ -48,7 +48,7 @@ test('validateAndExtractRequest detect wrong parameters key', t => {
   };
   t.throws(
     () => validateAndExtractRequest(req),
-    "WRONG KEY does not comply with pattern '/^[_.a-zA-Z][_.a-zA-Z0-9]+$/'"
+    "parametersKey does not comply with pattern '/^[_.a-zA-Z][_.a-zA-Z0-9]+$/' (WRONG KEY)"
   );
 });
 
@@ -108,23 +108,23 @@ test('validate ARN string', t => {
 test('validate string support check str pattern', t => {
   t.throws(
     () => validateString('toto', ' space in it', validateString.AWS_NAME),
-    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME}' ( space in it)`
   );
   t.throws(
     () => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
-    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`
+    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}' (DASH-in-it)`
   );
   t.throws(
     () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME),
-    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME}' (878&*&*specialchar)`
   );
   t.throws(
     () => validateString('toto', ' space in it', validateString.AWS_NAME_ARN),
-    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}' ( space in it)`
   );
   t.throws(
     () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME_ARN),
-    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}' (878&*&*specialchar)`
   );
 });
 

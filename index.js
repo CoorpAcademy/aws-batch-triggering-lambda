@@ -53,7 +53,7 @@ const validateAndExtractRequest = request => {
   if (!!request.parameters && request.parameters.constructor === Object) {
     const parameters = {};
     for (const key of Object.keys(request.parameters)) {
-      parameters[validateString(key, key, validateString.SHELL_VARIABLE)] = validateString(
+      parameters[validateString('parametersKey', key, validateString.SHELL_VARIABLE)] = validateString(
         key,
         request.parameters[key]
       );
@@ -79,7 +79,7 @@ const validateString = (name, str, pattern = null) => {
   if (str === undefined) throw new Error(`${name} key is not defined`);
   if (typeof str !== 'string') throw new Error(`${name} key is not a string`);
   if (pattern && !pattern.test(str))
-    throw new Error(`${name} does not comply with pattern '${pattern}'`);
+    throw new Error(`${name} does not comply with pattern '${pattern}' (${str})`);
   return str;
 };
 validateString.AWS_NAME = /^[-_a-zA-Z0-9]+$/;
