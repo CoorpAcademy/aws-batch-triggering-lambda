@@ -1,7 +1,6 @@
 {
   "env": {
     "commonjs": true,
-    "es6": true,
     "node": true
   },
   "extends": [
@@ -11,7 +10,7 @@
     "plugin:@coorpacademy/coorpacademy/prettier"
   ],
   "parserOptions": {
-    "ecmaVersion": 2016,
+    "ecmaVersion": 8,
     "sourceType": "module"
   },
   "plugins": [
@@ -19,6 +18,8 @@
   ],
   "rules": {
     "strict": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "fp/no-loops": "off",
+    "no-useless-escape": "off"
   }
 }

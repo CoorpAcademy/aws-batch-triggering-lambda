@@ -48,7 +48,7 @@ test('validateAndExtractRequest detect wrong parameters key', t => {
   };
   t.throws(
     () => validateAndExtractRequest(req),
-    "WRONG KEY does not comply with pattern '/^[_.a-zA-Z][_.a-zA-Z0-9]+$/'"
+    "parametersKey does not comply with pattern '/^[_.a-zA-Z][_.a-zA-Z0-9]+$/' (WRONG KEY)"
   );
 });
 
@@ -76,6 +76,34 @@ test('validateAndExtractRequest leave out other args', t => {
     jobDefinition: 'jobDef',
     jobQueue: 'job-queue',
     jobName: 'test-job'
+  });
+});
+
+test('validateAndExtractRequest support version in jobDefinition', t => {
+  const req = {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job'
+  };
+  t.deepEqual(validateAndExtractRequest(req), {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job'
+  });
+});
+
+test('validateAndExtractRequest support dependsOn', t => {
+  const req = {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job',
+    dependsOn: [{jobId: '12'}, {jobId: '24'}]
+  };
+  t.deepEqual(validateAndExtractRequest(req), {
+    jobDefinition: 'jobDef:42',
+    jobQueue: 'job-queue',
+    jobName: 'test-job',
+    dependsOn: [{jobId: '12'}, {jobId: '24'}]
   });
 });
 
@@ -108,23 +136,23 @@ test('validate ARN string', t => {
 test('validate string support check str pattern', t => {
   t.throws(
     () => validateString('toto', ' space in it', validateString.AWS_NAME),
-    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME}' ( space in it)`
   );
   t.throws(
     () => validateString('toto', 'DASH-in-it', validateString.SHELL_VARIABLE),
-    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}'`
+    `toto does not comply with pattern '${validateString.SHELL_VARIABLE}' (DASH-in-it)`
   );
   t.throws(
     () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME),
-    `toto does not comply with pattern '${validateString.AWS_NAME}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME}' (878&*&*specialchar)`
   );
   t.throws(
     () => validateString('toto', ' space in it', validateString.AWS_NAME_ARN),
-    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}' ( space in it)`
   );
   t.throws(
     () => validateString('toto', '878&*&*specialchar', validateString.AWS_NAME_ARN),
-    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}'`
+    `toto does not comply with pattern '${validateString.AWS_NAME_ARN}' (878&*&*specialchar)`
   );
 });
 
@@ -142,7 +170,7 @@ test('generateJobName without jobPrefix', t => {
   t.truthy(/^JD--[0-9T-]+--[0-9a-f]{32}$/.test(generateJobName({jobDefinition: 'JD'})));
 });
 
-test('validate simple unique pattern', t => {
+test('validate simple unique prefix pattern', t => {
   const pattern = 'myprefix-.*';
   t.truthy(validatePattern(pattern, 'myprefix-isgood'));
   t.truthy(validatePattern(pattern, 'myprefix-isOK'));
@@ -174,40 +202,76 @@ test('validate multipattern', t => {
 });
 
 test('checkAuthorization no restriction', t => {
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {}));
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {}
+    )
+  );
 });
 
 test('checkAuthorization respected restriction', t => {
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_JOB_WHITELIST: 'j.b'}));
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.*e'}));
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {AWS_BATCH_JOB_WHITELIST: 'j.b'}
+    )
+  );
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {AWS_BATCH_QUEUE_WHITELIST: 'q.*e'}
+    )
+  );
 });
 test('checkAuthorization non respected restriction', t => {
-  t.throws(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_JOB_WHITELIST: 'j[aeiu]b'}), 'JobDefinition job is not allowed');
-  t.throws(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}), 'JobQueue queue is not allowed');
+  t.throws(
+    () =>
+      checkAuthorization(
+        {
+          jobDefinition: 'job',
+          jobQueue: 'queue'
+        },
+        {AWS_BATCH_JOB_WHITELIST: 'j[aeiu]b'}
+      ),
+    'JobDefinition job is not allowed'
+  );
+  t.throws(
+    () =>
+      checkAuthorization(
+        {
+          jobDefinition: 'job',
+          jobQueue: 'queue'
+        },
+        {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}
+      ),
+    'JobQueue queue is not allowed'
+  );
 });
 
 test('validateDependsOn with normal dependsOn', t => {
   const don = [{jobId: '12'}, {jobId: '24'}];
-  t.deepEqual(validateDependsOn(don), don)
+  t.deepEqual(validateDependsOn(don), don);
 });
 
 test('validateDependsOn with extra info in dependsOn', t => {
   const don = [{jobId: '12', extra: 'information'}, {jobId: '24'}];
-  t.deepEqual(validateDependsOn(don), [{jobId: '12'}, {jobId: '24'}])
+  t.deepEqual(validateDependsOn(don), [{jobId: '12'}, {jobId: '24'}]);
 });
 
 test('validateDependsOn with missing jobId in dependsOn', t => {
   const don = [{extra: 'information'}, {jobId: '24'}];
-  t.throws(() => validateDependsOn(don),
-    'dependsOn job does not have jobId {"extra":"information"}')
+  t.throws(
+    () => validateDependsOn(don),
+    'dependsOn job does not have jobId {"extra":"information"}'
+  );
 });

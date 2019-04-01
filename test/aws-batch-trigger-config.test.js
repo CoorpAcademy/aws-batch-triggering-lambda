@@ -42,7 +42,7 @@ test('getActivatedEventSources with disable config', t => {
   );
 });
 
-test('getActivatedEventSources with disable config', t => {
+test('getActivatedEventSources with partial disable config', t => {
   t.deepEqual(
     getActivatedEventSources(['ab', 'cd', 'ef'], {
       AWS_BATCH_TRIGGER_DISABLE: 'ab;cd'
