@@ -14,6 +14,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [0.10.0] - 2018-07-16
 - Add support for SQS trigger
 
+## [0.11.0] - 2018-07-18
+- Add support for ARN for jobDefinition and jobQueue
+- Add support for revision in jobDefinition
+
+## [0.10.0] - 2018-07-16
+- Add support for SQS trigger
+
 ## [0.9.0] - 2017-10-26
 - Add handling for `dependsOn` job list
 
