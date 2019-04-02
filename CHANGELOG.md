@@ -5,7 +5,7 @@ All notable changes to *AWS Batch Triggering Lambda* will be documented in this 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
-*Nothing So Far*
+- Migrate engine from nodejs 6.10 to 8.10
 
 ## [0.11.0] - 2018-07-18
 - Add support for ARN for jobDefinition and jobQueue

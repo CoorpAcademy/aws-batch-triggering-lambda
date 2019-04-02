@@ -1,6 +1,18 @@
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
 
+const getActivatedEventSources = (ses, env) => {
+  if (env.AWS_BATCH_TRIGGER_ENABLE !== undefined) {
+    const requestsEs = env.AWS_BATCH_TRIGGER_ENABLE.split(';');
+    return ses.filter(es => requestsEs.indexOf(es) !== -1);
+  }
+  if (env.AWS_BATCH_TRIGGER_DISABLE !== undefined) {
+    const exceptEs = env.AWS_BATCH_TRIGGER_DISABLE.split(';');
+    return ses.filter(es => exceptEs.indexOf(es) === -1);
+  }
+  return [...ses];
+};
+
 const handleKinesisRecord = record => {
   const payload = Buffer.from(record.kinesis.data, 'base64').toString('utf-8');
   try {
@@ -33,21 +45,7 @@ const eventSourceHandlers = {
   'aws:sns': handleSnsRecord,
   'aws:sqs': handleSqsRecord
 };
-
 const supportedEventSources = Object.keys(eventSourceHandlers);
-
-const getActivatedEventSources = (ses, env) => {
-  if (env.AWS_BATCH_TRIGGER_ENABLE !== undefined) {
-    const requestsEs = env.AWS_BATCH_TRIGGER_ENABLE.split(';');
-    return ses.filter(es => requestsEs.indexOf(es) !== -1);
-  }
-  if (env.AWS_BATCH_TRIGGER_DISABLE !== undefined) {
-    const exceptEs = env.AWS_BATCH_TRIGGER_DISABLE.split(';');
-    return ses.filter(es => exceptEs.indexOf(es) === -1);
-  }
-  return [...ses];
-};
-
 const activatedEventSources = getActivatedEventSources(supportedEventSources, process.env);
 
 const handleAwsTrigger = records => {
@@ -72,6 +70,17 @@ const validateString = (name, str, pattern = null) => {
     throw new Error(`${name} does not comply with pattern '${pattern}' (${str})`);
   return str;
 };
+const nameBaseRegex = /[-_a-zA-Z0-9]+/;
+const arnBaseRegex = /arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)/;
+validateString.AWS_NAME = new RegExp(`^${nameBaseRegex.source}$`);
+validateString.AWS_ARN = new RegExp(`^${arnBaseRegex.source}$`);
+validateString.AWS_NAME_ARN = new RegExp(
+  `(${validateString.AWS_NAME.source})|(${validateString.AWS_ARN.source})`
+);
+validateString.AWS_NAME_ARN_WITH_REVISION = new RegExp(
+  `(^${nameBaseRegex.source}(:\\d+)?$)|(^${arnBaseRegex.source}(:\\d+)?$)`
+);
+validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const generateJobName = opt => {
   if (opt.jobName) return validateString('jobName', opt.jobName, validateString.AWS_NAME);
@@ -119,8 +128,8 @@ const validateAndExtractRequest = request => {
 
 const validatePattern = (pattern, str) => {
   const patterns = pattern.split(';');
-  for (const motive of patterns) {
-    if (new RegExp(`^${motive}$`).test(str)) return true;
+  for (const motif of patterns) {
+    if (new RegExp(`^${motif}$`).test(str)) return true;
   }
   return false;
 };
@@ -139,18 +148,6 @@ const checkAuthorization = (request, opt) => {
     throw new Error(`JobQueue ${request.jobQueue} is not allowed`);
   }
 };
-
-const nameBaseRegex = /[-_a-zA-Z0-9]+/;
-const arnBaseRegex = /arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)/;
-validateString.AWS_NAME = new RegExp(`^${nameBaseRegex.source}$`);
-validateString.AWS_ARN = new RegExp(`^${arnBaseRegex.source}$`);
-validateString.AWS_NAME_ARN = new RegExp(
-  `(${validateString.AWS_NAME.source})|(${validateString.AWS_ARN.source})`
-);
-validateString.AWS_NAME_ARN_WITH_REVISION = new RegExp(
-  `(^${nameBaseRegex.source}(:\\d+)?$)|(^${arnBaseRegex.source}(:\\d+)?$)`
-);
-validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const parseEvent = event => {
   const request = event.Records ? handleAwsTrigger(event.Records) : event;

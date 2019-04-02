@@ -9,6 +9,9 @@
     "cover": "nyc npm run test",
     "publish-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov"
   },
+  "engines": {
+    "node": "8.10"
+  },
   "dependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^8.3.0",
     "aws-sdk": "^2.432.0",
