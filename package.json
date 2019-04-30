@@ -10,7 +10,7 @@
     "publish-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov"
   },
   "engines": {
-    "node": "6.10.2"
+    "node": "8.10.0"
   },
   "dependencies": {
     "@coorpacademy/eslint-plugin-coorpacademy": "^6.0.1",
