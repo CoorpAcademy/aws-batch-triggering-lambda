@@ -1,5 +1,5 @@
-const AWS = require('aws-sdk');
 const crypto = require('crypto');
+const AWS = require('aws-sdk');
 
 const handler = (event, context, callback) => {
   const batch = new AWS.Batch({apiVersion: '2016-08-10'});
@@ -46,31 +46,40 @@ const handleAwsTrigger = records => {
 const validateAndExtractRequest = request => {
   const req = {};
   req.jobQueue = validateString('jobQueue', request.jobQueue, validateString.AWS_NAME_ARN);
-  req.jobDefinition = validateString('jobDefinition', request.jobDefinition, validateString.AWS_NAME_ARN_WITH_REVISION);
+  req.jobDefinition = validateString(
+    'jobDefinition',
+    request.jobDefinition,
+    validateString.AWS_NAME_ARN_WITH_REVISION
+  );
 
   req.jobName = generateJobName(request);
 
   if (!!request.parameters && request.parameters.constructor === Object) {
     const parameters = {};
     for (const key of Object.keys(request.parameters)) {
-      parameters[validateString('parametersKey', key, validateString.SHELL_VARIABLE)] = validateString(
-        key,
-        request.parameters[key]
-      );
+      parameters[
+        validateString('parametersKey', key, validateString.SHELL_VARIABLE)
+      ] = validateString(key, request.parameters[key]);
     }
     req.parameters = parameters;
   }
   if (!!request.dependsOn && request.dependsOn.length > 0) {
-    req.dependsOn = validateDependsOn(request.dependsOn)
+    req.dependsOn = validateDependsOn(request.dependsOn);
   }
   return req;
 };
 
 const checkAuthorization = (request, opt) => {
-  if (opt.AWS_BATCH_JOB_WHITELIST && !validatePattern(opt.AWS_BATCH_JOB_WHITELIST, request.jobDefinition)) {
+  if (
+    opt.AWS_BATCH_JOB_WHITELIST &&
+    !validatePattern(opt.AWS_BATCH_JOB_WHITELIST, request.jobDefinition)
+  ) {
     throw new Error(`JobDefinition ${request.jobDefinition} is not allowed`);
   }
-  if (opt.AWS_BATCH_QUEUE_WHITELIST && !validatePattern(opt.AWS_BATCH_QUEUE_WHITELIST, request.jobQueue)) {
+  if (
+    opt.AWS_BATCH_QUEUE_WHITELIST &&
+    !validatePattern(opt.AWS_BATCH_QUEUE_WHITELIST, request.jobQueue)
+  ) {
     throw new Error(`JobQueue ${request.jobQueue} is not allowed`);
   }
 };
@@ -86,8 +95,12 @@ const nameBaseRegex = /[-_a-zA-Z0-9]+/;
 const arnBaseRegex = /arn:([^:\n]*):([^:\n]*):([^:\n]*):([^:\n]*):(([^:\/\n]*)[:\/])?(.*)/;
 validateString.AWS_NAME = new RegExp(`^${nameBaseRegex.source}$`);
 validateString.AWS_ARN = new RegExp(`^${arnBaseRegex.source}$`);
-validateString.AWS_NAME_ARN = new RegExp(`(${validateString.AWS_NAME.source})|(${validateString.AWS_ARN.source})`);
-validateString.AWS_NAME_ARN_WITH_REVISION = new RegExp(`(^${nameBaseRegex.source}(:\\d+)?$)|(^${arnBaseRegex.source}(:\\d+)?$)`);
+validateString.AWS_NAME_ARN = new RegExp(
+  `(${validateString.AWS_NAME.source})|(${validateString.AWS_ARN.source})`
+);
+validateString.AWS_NAME_ARN_WITH_REVISION = new RegExp(
+  `(^${nameBaseRegex.source}(:\\d+)?$)|(^${arnBaseRegex.source}(:\\d+)?$)`
+);
 validateString.SHELL_VARIABLE = /^[_.a-zA-Z][_.a-zA-Z0-9]+$/;
 
 const validatePattern = (pattern, str) => {
@@ -100,8 +113,8 @@ const validatePattern = (pattern, str) => {
 
 const validateDependsOn = dependsOn => {
   return dependsOn.map(job => {
-    if(!job.jobId) throw new Error(`dependsOn job does not have jobId ${JSON.stringify(job)}`);
-    return ({jobId: job.jobId});
+    if (!job.jobId) throw new Error(`dependsOn job does not have jobId ${JSON.stringify(job)}`);
+    return {jobId: job.jobId};
   });
 };
 

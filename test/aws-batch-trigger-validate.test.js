@@ -165,7 +165,7 @@ test('validate simple unique pattern', t => {
   t.falsy(validatePattern(pattern, 'this-is-super-red'));
 });
 
-test('validate simple unique pattern', t => {
+test('validate simple unique pattern bis', t => {
   const pattern = '(t[io])+';
   t.truthy(validatePattern(pattern, 'to'));
   t.truthy(validatePattern(pattern, 'toto'));
@@ -187,40 +187,76 @@ test('validate multipattern', t => {
 });
 
 test('checkAuthorization no restriction', t => {
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {}));
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {}
+    )
+  );
 });
 
 test('checkAuthorization respected restriction', t => {
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_JOB_WHITELIST: 'j.b'}));
-  t.notThrows(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.*e'}));
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {AWS_BATCH_JOB_WHITELIST: 'j.b'}
+    )
+  );
+  t.notThrows(() =>
+    checkAuthorization(
+      {
+        jobDefinition: 'job',
+        jobQueue: 'queue'
+      },
+      {AWS_BATCH_QUEUE_WHITELIST: 'q.*e'}
+    )
+  );
 });
 test('checkAuthorization non respected restriction', t => {
-  t.throws(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_JOB_WHITELIST: 'j[aeiu]b'}), 'JobDefinition job is not allowed');
-  t.throws(() => checkAuthorization({
-    jobDefinition: 'job', jobQueue: 'queue'
-  }, {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}), 'JobQueue queue is not allowed');
+  t.throws(
+    () =>
+      checkAuthorization(
+        {
+          jobDefinition: 'job',
+          jobQueue: 'queue'
+        },
+        {AWS_BATCH_JOB_WHITELIST: 'j[aeiu]b'}
+      ),
+    'JobDefinition job is not allowed'
+  );
+  t.throws(
+    () =>
+      checkAuthorization(
+        {
+          jobDefinition: 'job',
+          jobQueue: 'queue'
+        },
+        {AWS_BATCH_QUEUE_WHITELIST: 'q.{2}e'}
+      ),
+    'JobQueue queue is not allowed'
+  );
 });
 
 test('validateDependsOn with normal dependsOn', t => {
   const don = [{jobId: '12'}, {jobId: '24'}];
-  t.deepEqual(validateDependsOn(don), don)
+  t.deepEqual(validateDependsOn(don), don);
 });
 
 test('validateDependsOn with extra info in dependsOn', t => {
   const don = [{jobId: '12', extra: 'information'}, {jobId: '24'}];
-  t.deepEqual(validateDependsOn(don), [{jobId: '12'}, {jobId: '24'}])
+  t.deepEqual(validateDependsOn(don), [{jobId: '12'}, {jobId: '24'}]);
 });
 
 test('validateDependsOn with missing jobId in dependsOn', t => {
   const don = [{extra: 'information'}, {jobId: '24'}];
-  t.throws(() => validateDependsOn(don),
-    'dependsOn job does not have jobId {"extra":"information"}')
+  t.throws(
+    () => validateDependsOn(don),
+    'dependsOn job does not have jobId {"extra":"information"}'
+  );
 });
