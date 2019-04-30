@@ -13,16 +13,16 @@
     "node": "8.10.0"
   },
   "dependencies": {
-    "@coorpacademy/eslint-plugin-coorpacademy": "^6.0.1",
-    "aws-sdk": "^2.116.0",
-    "eslint": "^4.6.1"
+    "@coorpacademy/eslint-plugin-coorpacademy": "^8.3.1",
+    "aws-sdk": "^2.445.0",
+    "eslint": "^5.16.0"
   },
   "devDependencies": {
-    "ava": "^0.22.0",
-    "aws-sdk-mock": "^1.7.0",
-    "codecov": "^2.3.0",
-    "lambda-tester": "^3.1.0",
-    "nyc": "^11.2.1"
+    "ava": "^1.4.1",
+    "aws-sdk-mock": "^4.4.0",
+    "codecov": "^3.3.0",
+    "lambda-tester": "^3.5.0",
+    "nyc": "^14.0.0"
   },
   "keywords": [
     "aws",
